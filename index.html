@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xác định vị trí GPS</title>
+</head>
+<body>
+    <h2>Đang xác định vị trí GPS của bạn...</h2>
+    <p id="status">Vui lòng cho phép trình duyệt truy cập vị trí.</p>
+
+    <script>
+        // Cấu hình mã Form và Entry ID tương ứng của bạn
+        const FORM_ID = "YOUR_FORM_ID"; // Thay bằng FORM ID của bạn
+        const ENTRY_LAT = "entry.123456789"; // Mã entry câu hỏi Vĩ độ
+        const ENTRY_LNG = "entry.987654321"; // Mã entry câu hỏi Kinh độ
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(redirectToForm, showError);
+            } else {
+                document.getElementById("status").innerText = "Trình duyệt không hỗ trợ định vị GPS.";
+            }
+        }
+
+        function redirectToForm(position) {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            // Xây dựng URL điều hướng tới Google Form đã chèn sẵn tọa độ
+            const formUrl = `[link removed]{FORM_ID}/viewform?usp=pp_url&${ENTRY_LAT}=${lat}&${ENTRY_LNG}=${lng}`;
+
+            document.getElementById("status").innerText = "Đã lấy thành công tọa độ! Đang chuyển hướng...";
+            
+            // Chuyển hướng người dùng sang Google Form
+            window.top.location.href = formUrl;
+        }
+
+        function showError(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    document.getElementById("status").innerText = "Quyền truy cập vị trí bị từ chối.";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    document.getElementById("status").innerText = "Không thể định vị được vị trí hiện tại.";
+                    break;
+                case error.TIMEOUT:
+                    document.getElementById("status").innerText = "Hết thời gian chờ lấy vị trí.";
+                    break;
+                default:
+                    document.getElementById("status").innerText = "Đã xảy ra lỗi không xác định.";
+                    break;
+            }
+        }
+
+        window.onload = getLocation;
+    </script>
+</body>
+</html>
